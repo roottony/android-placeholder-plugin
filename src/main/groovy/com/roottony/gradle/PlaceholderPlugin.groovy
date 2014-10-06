@@ -37,37 +37,14 @@ public class PlaceholderPlugin implements Plugin<Project> {
 
         // Using separate task
 
-        Task processPlaceholders = project.task("process${variant.name.capitalize()}Placeholders")
-
-        processPlaceholders << {
-            def buildConfigFolder = variant.generateBuildConfig.sourceOutputDir
-            def buildConfigFile = project.fileTree(buildConfigFolder).find {
-                it.name == "BuildConfig.java"
-            }
-
-            extension.replacements.each { replacement ->
-                project.ant.replace(
-                        file: buildConfigFile,
-                        token: "#" + replacement.key,
-                        value: replacement.value
-                )
-            }
-        }
-
-        variant.javaCompile.dependsOn processPlaceholders
-        processPlaceholders.dependsOn variant.generateBuildConfig
-
-
-        // Using doLast
-
-//        Task task = variant.generateBuildConfig
-//        task << {
-//            //println "Performing replacements on ${sourceOutputDir}"
-//            def buildConfigFile = project.fileTree(sourceOutputDir).find {
+//        Task processPlaceholders = project.task("process${variant.name.capitalize()}Placeholders")
+//
+//        processPlaceholders << {
+//            def buildConfigFolder = variant.generateBuildConfig.sourceOutputDir
+//            def buildConfigFile = project.fileTree(buildConfigFolder).find {
 //                it.name == "BuildConfig.java"
 //            }
 //
-//            //println "File: ${buildConfigFile}"
 //            extension.replacements.each { replacement ->
 //                project.ant.replace(
 //                        file: buildConfigFile,
@@ -75,11 +52,35 @@ public class PlaceholderPlugin implements Plugin<Project> {
 //                        value: replacement.value
 //                )
 //            }
-//
-//            //println "Properties: \n${inputs.properties}"
 //        }
 //
-//        task.inputs.property("replacements", extension.replacements )
+//        variant.javaCompile.dependsOn processPlaceholders
+//        processPlaceholders.dependsOn variant.generateBuildConfig
+
+
+        // Using doLast
+
+        Task task = variant.generateBuildConfig
+        task.inputs.property("replacements", extension.replacements )
+
+        task << {
+            //println "Performing replacements on ${sourceOutputDir}"
+            def buildConfigFile = project.fileTree(sourceOutputDir).find {
+                it.name == "BuildConfig.java"
+            }
+
+            //println "File: ${buildConfigFile}"
+            extension.replacements.each { replacement ->
+                project.ant.replace(
+                        file: buildConfigFile,
+                        token: "#" + replacement.key,
+                        value: replacement.value
+                )
+            }
+
+            //println "Properties: \n${inputs.properties}"
+        }
+
     }
 
 }
