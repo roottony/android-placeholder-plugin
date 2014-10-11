@@ -48,7 +48,7 @@ public class PlaceholderPlugin implements Plugin<Project> {
 //            extension.replacements.each { replacement ->
 //                project.ant.replace(
 //                        file: buildConfigFile,
-//                        token: "#" + replacement.key,
+//                        token: "#${replacement.key}",
 //                        value: replacement.value
 //                )
 //            }
@@ -73,7 +73,7 @@ public class PlaceholderPlugin implements Plugin<Project> {
             extension.replacements.each { replacement ->
                 project.ant.replace(
                         file: buildConfigFile,
-                        token: "#" + replacement.key,
+                        token: "#${replacement.key}",
                         value: replacement.value
                 )
             }
